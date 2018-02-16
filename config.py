@@ -1,12 +1,12 @@
 import datetime as dt
 config = {
     # General config.
-    'start_date': '2015-11-16',
+    'start_date': '2015-11-15',
     'end_date': '2015-11-20',
-    'api_key' : "",
+    'api_key' : "Insert Api Key",
 
     # Strategy config.
-    'ticker': 'GOOG',
+    'ticker': 'A',
 }
 
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import quandl
-
+import pandas as pd 
 quandl.ApiConfig.api_key = "7MA978mgAH8cTzL7CGa_"
 quandl.ApiConfig.page_limit=300
 

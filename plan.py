@@ -17,8 +17,16 @@ config = {
 
 
 class DataDownloader:
-    pass
+    def missingData(self,missinDates):
+        for date in missingDates:
+            self.download
 
+        
+
+    def dataDownload(date):
+        download(date)
+        extractzip()
+        
 
 class DataFeeder:
     def __init__(self, strategy=None, *args, **kwargs):
@@ -76,7 +84,7 @@ class OptionsTrader():
         pass
     
     def sell_put():
-        
+        pass
         
 
 

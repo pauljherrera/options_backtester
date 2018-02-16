@@ -1,3 +1,11 @@
 *.csv
 passwords.txt
 myvenv
+.vscode
+Historical Data
+__pycache__
+resumen.txt
+Harvested Backtest Framework-c01b8a37c1fb.json
+db
+options_backtester.db
+targetdir
