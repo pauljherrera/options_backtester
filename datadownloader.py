@@ -127,7 +127,6 @@ class DataDownloader(object):
 
         with open(source_file_name, 'rb') as source_file:
             # This example uses CSV, but you can use other formats.
-            # See https://cloud.google.com/bigquery/loading-data
             job_config = bigquery.LoadJobConfig()
             job_config.schema = self.SCHEMA
             job_config.source_format = 'CSV'
