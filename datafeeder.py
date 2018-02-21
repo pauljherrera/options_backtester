@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np 
 import sqlite3
 from sqlite3 import Error
+from google.cloud import bigquery
+from pandas.io import gbq
 import os
 import re
 
@@ -67,11 +69,11 @@ class DataFeeder():
         missing_dates = duel[0].tolist()
         return missing_dates
 
-    def data_scavenger(self,start_date,end_date,ticker):
+    def data_scavenger(self,start_date,end_date,ticker):     #Deprecated
         """ Simulation of BigQuery usage. The idea is to use the same parameters that we should 
         use with GBQ.  
         """
-        query =  "SELECT ticker, stkPx, expirDate, strike, trade_date from 'OSMV-20180213' where trade_date BETWEEN ? and ? AND ticKer = ? ;"
+        query =  "SELECT ticker, stkPx, expirDate, strike, trade_date, yte from 'OSMV-20180213' where trade_date BETWEEN ? and ? AND ticKer = ? ;"
         start_date = config['start_date']
         end_date = config['end_date']
         ticker = config['ticker']
@@ -97,3 +99,27 @@ class DataFeeder():
             print(e)
 
         return None
+
+    def big_query_request(self,start_date,end_date,ticker):
+        """Function that extract data from BigQuery
+        
+        :param start_date: Initial date of backteste
+        :type start_date: String
+
+        :param end_date: Initial date of backteste
+        :type end_date: String 
+
+        :param ticker: Ticker name
+        :type ticker: String
+        """
+        query = """
+                                SELECT ticker,stkPx,expirDate, strike, trade_date, yte
+                                FROM  [advance-mantis-188120:Options_backtester.First_Table]
+                                WHERE ticker = '%s' AND DATE(trade_date) BETWEEN ('%s') AND ('%s')
+                                LIMIT
+                                1000
+                                """ %(ticker,start_date,end_date)
+
+        projectid = 'advance-mantis-188120'
+        data_frame = pd.read_gbq(query, projectid,private_key = 'Harvested Backtest Framework-c01b8a37c1fb.json')
+        print(data_frame)
