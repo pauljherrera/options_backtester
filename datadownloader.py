@@ -5,7 +5,9 @@ import os
 from datetime import datetime, timedelta
 from google.cloud import storage, bigquery
 from google.cloud.bigquery import Dataset
-
+import multiprocessing.pool as mpool
+import threading
+import time
 from config import config
 
 api_key = config['api_key']
@@ -72,7 +74,7 @@ class DataDownloader(object):
                 r = requests.get("https://www.quandl.com/api/v3/databases/OSMV/download?",stream=True, params=payload,timeout=200)   
                 total = int(r.headers.get('content-length'))
                 with open("file.zip", "wb") as handle:
-                    for data in tqdm(r.iter_content(), total = total):
+                    for data in r.iter_content(1024*5):
                         handle.write(data)
 
 
@@ -134,7 +136,7 @@ class DataDownloader(object):
             job = self.client.load_table_from_file(
                 source_file, table_ref, job_config=job_config)
 
-        job.result()  # Waits for job to complete
+        #job.result()  # Waits for job to complete
 
         print('Loaded {} rows into {}:{}.'.format(
             job.output_rows, dataset_id, table_id))
@@ -145,13 +147,13 @@ class DataDownloader(object):
         dataset.description = data_set_description
         dataset = self.client.create_dataset(dataset)  # API request
 
-    def __create_table(self):
+    def create_table(self):
         """Private method to create a table in a specific DataSet of BigQuery.  It should be used once.
         """
         
         #Schema of the data
-        dataset = self.client.dataset('Creation')  #Specific DataSet ID, it can be found on GBQ Dashboard
-        table_ref = dataset.table('FirstTableFromApi') #Specific 
+        dataset = self.client.dataset('Options_backtester')  #Specific DataSet ID, it can be found on GBQ Dashboard
+        table_ref = dataset.table('OSMV_TABLES') #Specific 
         table = bigquery.Table(table_ref, schema=self.SCHEMA)
         table = self.client.create_table(table)      # API request
 
@@ -160,6 +162,7 @@ class DataDownloader(object):
         files = os.listdir('Historical Data')
         for file in tqdm(files) :
             path_to_file = 'Historical Data/' + file
+            
             self.load_data_from_file(dataset_id = dataset , table_id = table,source_file_name = path_to_file)
         
-        print('Finished')
+        

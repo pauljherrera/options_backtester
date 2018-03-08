@@ -1,13 +1,13 @@
 import datetime as dt
 config = {
     # General config.
-    'start_date': '2015-11-16',
-    'end_date': '2015-11-20',
+    'start_date': '2016-01-01',
+    'end_date': '2016-05-31',
     'api_key' : "Insert Api Key",
 
     # Strategy config.
-    'ticker': 'AAPL',
-    'premiun' : 1,
+    'ticker': 'GOOGL',
+    'premiun' : 5,
     '%OTM' : 2,
     'frecuency' : 'Monthly',
     'duration' : 1

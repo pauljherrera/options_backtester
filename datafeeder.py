@@ -8,7 +8,7 @@ import re
 from config import config
 from datadownloader import DataDownloader
 
-
+donwloads = DataDownloader()
 
 ticker = config['ticker']
 start_date = config['start_date']
@@ -25,15 +25,16 @@ class DataFeeder():
         self.ticker = ticker
 
 
-    def feed_data(self,strategy = None,**kwargs):
-        
-        data = self.big_query_request(self.start_date,self.end_date,self.ticker)
-        trade_dates = self.range_dates()
-        dates = data['trade_date'].drop_duplicates()
+    def feed_data(self,strategy = None,data = None,**kwargs):
+        if data is not None :      #test purpose, this allow to load test data in csv format
+            
+            dataFrame = data
+            
+        else:
+            
+            dataFrame = self.big_query_request(self.start_date,self.end_date,self.ticker) #BigQuery request with parameters
 
-        for date in dates :
-            daily_data = data[data['trade_date']==date]
-            strategy.update(daily_data)
+        strategy.load(dataFrame)
 
     def checker(self):  #Probaly deprecated on V2
         """Function to check wether a list of dates is available on the historical data
@@ -43,7 +44,7 @@ class DataFeeder():
         for date in dates:
             d = re.sub('[^0-9]+','',date)
             dirs.append(d)
-        users_range = self.__range_dates()
+        users_range = self.range_dates()
         difference = list(set(users_range) - set(dirs))
         if not difference:
             print('All data available, proceeding to Backtest')
@@ -79,10 +80,9 @@ class DataFeeder():
         """
         query = """
                                 SELECT ticker,stkPx,expirDate, strike, trade_date, yte
-                                FROM  [advance-mantis-188120:Creation.First_Table_FromApi]
+                                FROM  [advance-mantis-188120:Options_backtester.OSMV_TABLES]
                                 WHERE ticker = '%s' AND DATE(trade_date) BETWEEN ('%s') AND ('%s')
-                                LIMIT
-                                10000
+                            
                                 """ %(ticker,start_date,end_date)
 
         projectid = 'advance-mantis-188120'
