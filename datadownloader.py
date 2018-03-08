@@ -145,7 +145,7 @@ class DataDownloader(object):
         dataset.description = data_set_description
         dataset = self.client.create_dataset(dataset)  # API request
 
-    def create_table(self):
+    def __create_table(self):
         """Private method to create a table in a specific DataSet of BigQuery.  It should be used once.
         """
         
@@ -154,3 +154,12 @@ class DataDownloader(object):
         table_ref = dataset.table('FirstTableFromApi') #Specific 
         table = bigquery.Table(table_ref, schema=self.SCHEMA)
         table = self.client.create_table(table)      # API request
+
+    def load_multiple_files(self,dataset,table):
+
+        files = os.listdir('Historical Data')
+        for file in tqdm(files) :
+            path_to_file = 'Historical Data/' + file
+            self.load_data_from_file(dataset_id = dataset , table_id = table,source_file_name = path_to_file)
+        
+        print('Finished')

@@ -14,7 +14,6 @@ ticker = config['ticker']
 start_date = config['start_date']
 end_date = config['end_date']
 
-donwloads = DataDownloader()
 
 class DataFeeder():
     
@@ -26,12 +25,15 @@ class DataFeeder():
         self.ticker = ticker
 
 
-    def feed_data(self,*args,**kwargs):
+    def feed_data(self,strategy = None,**kwargs):
         
         data = self.big_query_request(self.start_date,self.end_date,self.ticker)
-        print(data)
-        [strategy.update(data)  for row in data.itertuples()]
+        trade_dates = self.range_dates()
+        dates = data['trade_date'].drop_duplicates()
 
+        for date in dates :
+            daily_data = data[data['trade_date']==date]
+            strategy.update(daily_data)
 
     def checker(self):  #Probaly deprecated on V2
         """Function to check wether a list of dates is available on the historical data
@@ -52,13 +54,13 @@ class DataFeeder():
             donwloads.missing_dates(difference)
         
 
-    def __range_dates(self): 
+    def range_dates(self): 
         """Function to make a range between Start_date and end_date
         """
 
-        my_dates = pd.date_range(start_date,end_date)
+        my_dates = pd.bdate_range(start_date,end_date)
         duel = pd.DataFrame(my_dates)
-        duel[0] = duel[0].dt.strftime('%Y%m%d')
+        duel[0] = duel[0].dt.strftime('%Y-%m-%d')
         missing_dates = duel[0].tolist()
         return missing_dates
 
@@ -80,7 +82,7 @@ class DataFeeder():
                                 FROM  [advance-mantis-188120:Creation.First_Table_FromApi]
                                 WHERE ticker = '%s' AND DATE(trade_date) BETWEEN ('%s') AND ('%s')
                                 LIMIT
-                                1000
+                                10000
                                 """ %(ticker,start_date,end_date)
 
         projectid = 'advance-mantis-188120'

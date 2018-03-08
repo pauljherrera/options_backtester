@@ -41,12 +41,7 @@ class DataFeeder:
             self.strategy.update(data)
     
     
-class StrategyBase:
-    """
-    Abstract base class for strategies.
-    """
-    def update(data):
-        raise NotImplementedError
+
         
 
 class Strategy(StrategyBase):
