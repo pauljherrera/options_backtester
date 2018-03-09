@@ -3,6 +3,7 @@ import numpy as np
 from config import config
 import matplotlib.pyplot as plt 
 import seaborn as sns
+matplotlib.use('Agg')
 sns.set()
 sns.axes_style('darkgrid')
 frecuency = config['frecuency']
