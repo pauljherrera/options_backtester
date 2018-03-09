@@ -24,10 +24,10 @@ class CoveredCall():
         dates = data['trade_date'].drop_duplicates()  #Extract list of dates to iterate over
         open_trade = True
         row_list = [] #List of rows to add to DataFrame
-
+        final_price = 51
         for date in dates :
             daily_data = data[data['trade_date']==date] #Only data for the current date
-
+            
             if open_trade == True:   #Indicate entry opportunity
 
                 entry = self.entry(daily_data)
@@ -49,7 +49,8 @@ class CoveredCall():
                     row = self.pnl(stk_price1,final_price,strike_price,share_trade,option_trade,trade_date)
                     row_list.append(row)
                     open_trade = True
-        df = pd.DataFrame(row_list,columns = ['shares_pnl','sell_call_pnl','covered_call_pnl','strike','initial_stkPx','final_stkPX','trade_date'])
+        df = pd.DataFrame(row_list,columns = ['shares_pnl','sell_call_pnl','covered_call_pnl','strike','initial_stkPx','final_stkPx','trade_date'])
+    
         self.stats_and_plot(df)
 
     def entry(self,data):
@@ -74,19 +75,19 @@ class CoveredCall():
         
         shares_pnl = (final_stkPx-initial_stkPx) * shares
 
-        sell_call_pnl = np.where(final_stkPx > strike,((strike-final_stkPx )+premiun)*100*options, (premiun * 100 * options))
+        sell_call_pnl = np.where(final_stkPx >= strike,(-(final_stkPx -strike )*100*options + premiun*100*options), (premiun * 100 * options))
         
         covered_call_pnl = shares_pnl + sell_call_pnl
         #covered_call_pnl = np.where(final_stkPx > strike,((strike - initial_stkPx) + premiun) * shares,(
             #(final_stkPx - initial_stkPx ) + premiun) * shares )
-        
+       
         dict_round = {
             'shares_pnl':shares_pnl,
             'sell_call_pnl':sell_call_pnl,
             'covered_call_pnl':covered_call_pnl,
             'strike':strike,
             'initial_stkPx':initial_stkPx,
-            'final_stkPX': final_stkPx,
+            'final_stkPx': final_stkPx,
             'trade_date':trade_date
         } 
 
@@ -106,7 +107,12 @@ class CoveredCall():
         plt.ylabel('Profit')
         plt.xlabel('Date')
         plt.legend("Hola")
-        
+        plt.show()
+
+        plt.scatter(df['final_stkPx'],df['covered_call_pnl'])
+        plt.show()
+
+
         std = df['covered_call_pnl'].std()
         mean = df['covered_call_pnl'].mean()
         sharpe_ratio = mean/std
@@ -124,5 +130,5 @@ class CoveredCall():
       
 
 
-        plt.show()
+        
 
