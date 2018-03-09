@@ -2,9 +2,9 @@ import pandas as pd
 import numpy as np 
 from config import config
 import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt 
 import seaborn as sns
-matplotlib.use('Agg')
 sns.set()
 sns.axes_style('darkgrid')
 frecuency = config['frecuency']
