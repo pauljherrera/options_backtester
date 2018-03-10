@@ -12,7 +12,8 @@ config = {
     'frecuency' : 'Monthly',
     'duration' : 0.1,
     'shares':1000,
-    'options':10
+    'options':10,
+    'exchange_comisions':0.1
 }
 
 

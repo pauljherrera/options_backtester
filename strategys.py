@@ -1,8 +1,8 @@
 import pandas as pd 
 import numpy as np 
 from config import config
-import matplotlib
-matplotlib.use('Agg')
+#import matplotlib
+#matplotlib.use('Agg')
 import matplotlib.pyplot as plt 
 import seaborn as sns
 sns.set()
@@ -15,7 +15,7 @@ premiun = config['premiun']
 duration = config['duration']
 config_shares = config['shares']
 config_options = config['options']
-
+exchange_comisions = config['exchange_comisions']
 
 
 class CoveredCall():
@@ -51,7 +51,7 @@ class CoveredCall():
                     row = self.pnl(stk_price1,final_price,strike_price,share_trade,option_trade,trade_date)
                     row_list.append(row)
                     open_trade = True
-        df = pd.DataFrame(row_list,columns = ['shares_pnl','sell_call_pnl','covered_call_pnl','strike','initial_stkPx','final_stkPx','trade_date'])
+        df = pd.DataFrame(row_list,columns = ['shares_pnl','sell_call_pnl','covered_call_pnl','strike','initial_stkPx','final_stkPx','trade_date','comision'])
     
         self.stats_and_plot(df)
 
@@ -77,7 +77,7 @@ class CoveredCall():
         
         shares_pnl = (final_stkPx-initial_stkPx) * shares
 
-        sell_call_pnl = np.where(final_stkPx >= strike,(-(final_stkPx -strike )*100*options + premiun*100*options), (premiun * 100 * options))
+        sell_call_pnl = np.where(final_stkPx >= strike,(-(final_stkPx -strike )+ premiun) *100*options, (premiun * 100 * options))
         
         covered_call_pnl = shares_pnl + sell_call_pnl
         #covered_call_pnl = np.where(final_stkPx > strike,((strike - initial_stkPx) + premiun) * shares,(
@@ -90,7 +90,8 @@ class CoveredCall():
             'strike':strike,
             'initial_stkPx':initial_stkPx,
             'final_stkPx': final_stkPx,
-            'trade_date':trade_date
+            'trade_date':trade_date,
+            'comision':1
         } 
 
         return dict_round
@@ -111,9 +112,6 @@ class CoveredCall():
         plt.legend("Hola")
         plt.show()
 
-        plt.scatter(df['final_stkPx'],df['covered_call_pnl'])
-        plt.show()
-
 
         std = df['covered_call_pnl'].std()
         mean = df['covered_call_pnl'].mean()
@@ -123,11 +121,13 @@ class CoveredCall():
         win_loss = pd.DataFrame(np.where(df['covered_call_pnl']>=0,1,0))
         win_ratio = (win_loss.sum()*100)/win_loss.count()
         loss_ratio = 100-win_ratio
-        total_profit = df['cumsum'].iloc[-1]
-
-
-        print("Win - Loss ratio is : %d %% WIN and  %d %% LOSS \nWith a SharpeRatio of : %f and a total Profit of %d $" 
-        %(win_ratio,loss_ratio,sharpe_ratio,total_profit))
+        comisions = df['comision'].sum() * exchange_comisions
+        
+        total_profit = df['cumsum'].iloc[-1] 
+        prueba = total_profit -  comisions
+        print(prueba )
+        print("Win - Loss ratio is : %d %% WIN and  %d %% LOSS \nWith a SharpeRatio of : %f and a total Profit of %d $ comisions %f" 
+        %(win_ratio,loss_ratio,sharpe_ratio,total_profit,comisions))
 
       
 
