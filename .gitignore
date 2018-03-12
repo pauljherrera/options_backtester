@@ -19,4 +19,9 @@ src/pip-delete-this-directory.txt
 *.pyc
 apikey2.json
 apikey.json
+Backtests/
+datafeeder.py.save
+nohup.out
+update.cron
+src/
 

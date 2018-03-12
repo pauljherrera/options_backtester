@@ -18,9 +18,7 @@ strategy = CoveredCall()
 
 def main():
    
-    #df =pd.read_csv('MRK-2016-01-01-2018-01-31.csv')
-    #df = df.sort_values(by= ['trade_date'])
-    my_feeder.feed_data(strategy = strategy )
+    my_feeder.feed_data(strategy = strategy)
 
 if __name__ == '__main__':
     main()

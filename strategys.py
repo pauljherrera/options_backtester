@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
 sns.axes_style('darkgrid')
-frecuency = config['frecuency']
+#frecuency = config['frecuency']
 OTM_high = config['%OTM'] + 1
 OTM_low = config['%OTM'] - 1
 pd.options.mode.chained_assignment = None
@@ -15,7 +15,9 @@ premiun = config['premiun']
 duration = config['duration']
 config_shares = config['shares']
 config_options = config['options']
-
+ticker = config['ticker']
+start_date = config['start_date']
+end_date = config['end_date']
 
 
 class CoveredCall():
@@ -109,10 +111,10 @@ class CoveredCall():
         plt.ylabel('Profit')
         plt.xlabel('Date')
         plt.legend("Hola")
-        plt.show()
+        path = 'Backtests/'+ticker+'-'+start_date+'-'+end_date
 
-        plt.scatter(df['final_stkPx'],df['covered_call_pnl'])
-        plt.show()
+        plt.savefig(path)
+
 
 
         std = df['covered_call_pnl'].std()

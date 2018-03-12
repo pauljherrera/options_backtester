@@ -33,8 +33,8 @@ class DataFeeder():
         else:
             
             dataFrame = self.big_query_request(self.start_date,self.end_date,self.ticker) #BigQuery request with parameters
-            csv_name = ticker+ '-'+str(start_date)+'-'+str(end_date)+'.csv'
-            dataFrame.to_csv(csv_name,index = False)
+            #csv_name = ticker+ '-'+str(start_date)+'-'+str(end_date)+'.csv'
+            #dataFrame.to_csv(csv_name,index = False)
             dataFrame = dataFrame.sort_values(by= ['trade_date']) #Sort dates in order to make backtest
         strategy.load(dataFrame)
 
@@ -88,6 +88,6 @@ class DataFeeder():
                                 """ %(ticker,start_date,end_date)
 
         projectid = 'advance-mantis-188120'
-        data_frame = pd.read_gbq(query, projectid,private_key = 'Harvested Backtest Framework-c01b8a37c1fb.json')
+        data_frame = pd.read_gbq(query,projectid)
         
         return data_frame
