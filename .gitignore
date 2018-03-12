@@ -13,3 +13,10 @@ file.zip
 from_csv_to_sql.py 
 private_key.ppk
 public_key_VM
+.daily_update.py.swp
+.apikey.json.swo
+src/pip-delete-this-directory.txt
+*.pyc
+apikey2.json
+apikey.json
+
