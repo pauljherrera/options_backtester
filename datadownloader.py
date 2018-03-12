@@ -74,9 +74,10 @@ class DataDownloader(object):
                 r = requests.get("https://www.quandl.com/api/v3/databases/OSMV/download?",stream=True, params=payload,timeout=200)   
                 total = int(r.headers.get('content-length'))
                 with open("file.zip", "wb") as handle:
+                    print("Downloading data")
                     for data in r.iter_content(1024*5):
                         handle.write(data)
-
+                print('Data downloaded')
 
                 with zipfile.ZipFile("file.zip","r") as zip_ref:
                     zip_ref.extractall("Historical Data")
@@ -104,21 +105,30 @@ class DataDownloader(object):
                 print(indentifier)
                 
     def daily_update(self):
-        """Function to update Google Cloud Storage daily with data from Quandl (ORMSV options)
-        """
-        date = datetime.strftime(datetime.now() - timedelta(1), '%Y%m%d') 
+
+        date = datetime.strftime(datetime.now()-timedelta(1), '%Y%m%d') 
         #Get yesterday date to download data. This method should run everyday.
 
         self.__download(date)
-        
+        dataset_ref = self.client.dataset('Options_backtester')
+        table_ref = dataset_ref.table('OSMV_TABLES')
 
-        
-        bucket = self.client.get_bucket('1avanti_options')
         path_file = 'Historical Data/OSMV-' + date + '.csv'
-        file_name = 'OSMV-'+date+'.csv'
         
-        blob = bucket.blob(path_file)
-        blob.upload_from_filename(path_file)
+        with open(path_file, 'rb') as source_file:
+            # This example uses CSV, but you can use other formats.
+            job_config = bigquery.LoadJobConfig()
+            job_config.schema = self.SCHEMA
+            job_config.source_format = 'CSV'
+            job_config.skip_leading_rows = 1
+            job = self.client.load_table_from_file(
+                source_file, table_ref, job_config=job_config)
+
+        job.result()  # Waits for job to complete
+
+        print('Loaded {} rows into {}:{}.'.format(
+            job.output_rows, dataset_ref, table_ref))
+
 
     
         
@@ -136,7 +146,7 @@ class DataDownloader(object):
             job = self.client.load_table_from_file(
                 source_file, table_ref, job_config=job_config)
 
-        #job.result()  # Waits for job to complete
+        job.result()  # Waits for job to complete
 
         print('Loaded {} rows into {}:{}.'.format(
             job.output_rows, dataset_id, table_id))
