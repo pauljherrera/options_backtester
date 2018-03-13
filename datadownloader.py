@@ -167,9 +167,13 @@ class DataDownloader(object):
         table = bigquery.Table(table_ref, schema=self.SCHEMA)
         table = self.client.create_table(table)      # API request
 
-    def load_multiple_files(self,dataset,table):
+    def load_multiple_files(self,dataset,table,list_data=None):
 
-        files = os.listdir('Historical Data')
+        if list_data is not None:
+            files = list_data
+        else:
+            files = os.listdir('Historical Data')
+
         for file in tqdm(files) :
             path_to_file = 'Historical Data/' + file
             
