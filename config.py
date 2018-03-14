@@ -9,10 +9,10 @@ config = {
     'ticker': 'GOOGL',
     'premiun' : 1.5,
     '%OTM' : 2,
-    'frecuency' : 'Monthly',
+    'frecuency' : 30 ,
     'duration' : 0.1,
-    'shares':1000,
-    'options':10,
+    'initial_position':1000,
+    '%ofPosition':100,
     'exchange_comisions':0.1
 }
 
