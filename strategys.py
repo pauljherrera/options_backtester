@@ -1,5 +1,6 @@
 import pandas as pd 
 import numpy as np 
+from tqdm import tqdm
 from config import config
 #import matplotlib
 #matplotlib.use('Agg')
@@ -7,16 +8,17 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
 sns.axes_style('darkgrid')
-frecuency = config['frecuency']
+
 OTM_high = config['%OTM'] + 1
 OTM_low = config['%OTM'] - 1
 pd.options.mode.chained_assignment = None
 premiun = config['premiun']
 duration = config['duration']
-config_shares = config['shares']
-config_options = config['options']
+config_shares = config['initial_position']
+positionPercent = config['%ofPosition']
+options = (positionPercent*100)/config_shares
 exchange_comisions = config['exchange_comisions']
-
+frec = config['frecuency']
 
 class CoveredCall():
     """
@@ -26,31 +28,47 @@ class CoveredCall():
         dates = data['trade_date'].drop_duplicates()  #Extract list of dates to iterate over
         open_trade = True
         row_list = [] #List of rows to add to DataFrame
-        final_price = 51
-        for date in dates :
+        acum = 1      #Acumu variable to handle frecuency change
+        for date in tqdm(dates) :
+            acum +=1
             daily_data = data[data['trade_date']==date] #Only data for the current date
-            
             if open_trade == True:   #Indicate entry opportunity
 
                 entry = self.entry(daily_data)
 
-                if entry.empty == False:     #If there is a value in the DataFrame
-                    open_trade = False       #We won't take a position while this value is false
-                    selected_option = entry.iloc[0]
+                if entry.empty == False:     
+                    #If there is a value in the DataFrame
+                    open_trade = False       
+                    #We won't take a position while this value is false
+                    selected_option = entry.iloc[0] 
+                    #Select the first option, this can be improve to match exactly the parameters (Optimize)
                     stk_price1 = selected_option['stkPx']
                     strike_price = selected_option['strike']
                     expir_date = selected_option['expirDate']
                     trade_date = selected_option['trade_date']
-                    option_trade = self.sell_call(config_options)
+                    option_trade = self.sell_call(options)   
+                    #Sell Call
                     share_trade = self.buy_share(config_shares)
+                    #Buy Shares
 
+                    df_final_price = data[(data['trade_date'] >= expir_date)]         
+                    # We look into the dataFrame the price when the trade date is equal Or bigger than trade_date       
+
+                    if df_final_price.empty == False:     
+                        final_price = df_final_price['stkPx'].iloc[0]   
+                    #Now that we the prices we take de 0 position (it doesn´t matter order)
+
+                        row = self.pnl(stk_price1,final_price,strike_price,share_trade,option_trade,trade_date) 
+                        #Calculate the P&L of the selected options, it returns a dict that we add to a list and then to a DF
+                        row_list.append(row)
             else:
-                
-                if date >= expir_date :
-                    final_price = daily_data['stkPx'].iloc[0]
-                    row = self.pnl(stk_price1,final_price,strike_price,share_trade,option_trade,trade_date)
-                    row_list.append(row)
+              
+                if acum >= frec :
                     open_trade = True
+                    #If the frecuency is reach, we open the trade to start looking for the next entry date.
+                    acum=1
+                    #Reset the dates
+
         df = pd.DataFrame(row_list,columns = ['shares_pnl','sell_call_pnl','covered_call_pnl','strike','initial_stkPx','final_stkPx','trade_date','comision'])
     
         self.stats_and_plot(df)
@@ -85,7 +103,7 @@ class CoveredCall():
        
         dict_round = {
             'shares_pnl':shares_pnl,
-            'sell_call_pnl':sell_call_pnl,
+            'sell_call_pnl':np.round(sell_call_pnl,2),
             'covered_call_pnl':covered_call_pnl,
             'strike':strike,
             'initial_stkPx':initial_stkPx,
@@ -109,7 +127,6 @@ class CoveredCall():
         plt.title('Accounting Curve')
         plt.ylabel('Profit')
         plt.xlabel('Date')
-        plt.legend("Hola")
         plt.show()
 
 
@@ -134,3 +151,6 @@ class CoveredCall():
 
         
 
+if __name__ == '__main__':
+    main()
+    

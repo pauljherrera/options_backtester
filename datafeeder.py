@@ -81,7 +81,7 @@ class DataFeeder():
         :type ticker: String
         """
         query = """
-                                SELECT ticker,stkPx,expirDate, strike, trade_date, yte
+                                SELECT ticker,stkPx,expirDate, strike, trade_date, yte,cBidPx,pAskPx
                                 FROM  [advance-mantis-188120:Options_backtester.OSMV_TABLES]
                                 WHERE ticker = '%s' AND DATE(trade_date) BETWEEN ('%s') AND ('%s')
                             
