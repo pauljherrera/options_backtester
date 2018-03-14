@@ -29,6 +29,8 @@ class CoveredCall():
         open_trade = True
         row_list = [] #List of rows to add to DataFrame
         acum = 1      #Acumu variable to handle frecuency change
+        print('Procceding to Backtest:')
+        print('\b')
         for date in tqdm(dates) :
             acum +=1
             daily_data = data[data['trade_date']==date] #Only data for the current date
@@ -44,21 +46,21 @@ class CoveredCall():
                     #Select the first option, this can be improve to match exactly the parameters (Optimize)
                     stk_price1 = selected_option['stkPx']
                     strike_price = selected_option['strike']
-                    expir_date = selected_option['expirDate']
+                    expire_date = selected_option['expirDate']
                     trade_date = selected_option['trade_date']
                     option_trade = self.sell_call(options)   
                     #Sell Call
                     share_trade = self.buy_share(config_shares)
                     #Buy Shares
 
-                    df_final_price = data[(data['trade_date'] >= expir_date)]         
+                    df_final_price = data[(data['trade_date'] >= expire_date)]         
                     # We look into the dataFrame the price when the trade date is equal Or bigger than trade_date       
 
                     if df_final_price.empty == False:     
                         final_price = df_final_price['stkPx'].iloc[0]   
                     #Now that we the prices we take de 0 position (it doesn´t matter order)
 
-                        row = self.pnl(stk_price1,final_price,strike_price,share_trade,option_trade,trade_date) 
+                        row = self.pnl(stk_price1,final_price,strike_price,share_trade,option_trade,trade_date,expire_date) 
                         #Calculate the P&L of the selected options, it returns a dict that we add to a list and then to a DF
                         row_list.append(row)
             else:
@@ -69,7 +71,7 @@ class CoveredCall():
                     acum=1
                     #Reset the dates
 
-        df = pd.DataFrame(row_list,columns = ['shares_pnl','sell_call_pnl','covered_call_pnl','strike','initial_stkPx','final_stkPx','trade_date','comision'])
+        df = pd.DataFrame(row_list,columns = ['trade_date','expire_date','shares_pnl','sell_call_pnl','covered_call_pnl','strike'])
     
         self.stats_and_plot(df)
 
@@ -77,7 +79,7 @@ class CoveredCall():
         
         data['%OTM'] =  ((data['strike'] * 100)/data['stkPx'] ) - 100 #Convert price to %OTM
 
-        data['condition'] = np.where((data['yte'].between(duration, duration+0.02)) & (data['%OTM'].between(OTM_low,OTM_high) ),True,False)
+        data['condition'] = np.where((data['yte'].between(duration, duration+0.011)) & (data['%OTM'].between(OTM_low,OTM_high) ),True,False)
         true_values = data[data['condition']==True]
         return true_values
 
@@ -91,7 +93,7 @@ class CoveredCall():
         calls = value
         return calls
 
-    def pnl(self,initial_stkPx,final_stkPx,strike,shares,options,trade_date):
+    def pnl(self,initial_stkPx,final_stkPx,strike,shares,options,trade_date,expire_date):
         
         shares_pnl = (final_stkPx-initial_stkPx) * shares
 
@@ -106,10 +108,8 @@ class CoveredCall():
             'sell_call_pnl':np.round(sell_call_pnl,2),
             'covered_call_pnl':covered_call_pnl,
             'strike':strike,
-            'initial_stkPx':initial_stkPx,
-            'final_stkPx': final_stkPx,
             'trade_date':trade_date,
-            'comision':1
+            'expire_date':expire_date
         } 
 
         return dict_round
@@ -117,39 +117,47 @@ class CoveredCall():
     def stats_and_plot(self,dataFrame):
         
         df = dataFrame
-        print(df)
+        
+        df['cumsum_covered']= df['covered_call_pnl'].cumsum()
+        df['cumsum_stock']= df['sell_call_pnl'].cumsum()
+        df['cumsum_option']= df['shares_pnl'].cumsum()
 
-        df['cumsum']= df['covered_call_pnl'].cumsum()
-        df.set_index('trade_date')
+        df = df.set_index('trade_date')
+        print(df[['expire_date','shares_pnl','sell_call_pnl','covered_call_pnl']])
 
-        plt.plot(df['trade_date'],df['cumsum'] )
+        std = df['covered_call_pnl'].std()
+        mean = df['covered_call_pnl'].mean()
+        sharpe_ratio = mean/std
+
+        win_loss = pd.DataFrame(np.where(df['covered_call_pnl']>=0,1,0))
+        win_ratio = (win_loss.sum()*100)/win_loss.count()
+        loss_ratio = 100-win_ratio
+        comisions = len(df.index) * exchange_comisions
+        profit = df['cumsum_covered'].iloc[-1] 
+        stocks_profit = df['cumsum_stock'].iloc[-1]
+        option_profit = df['cumsum_option'].iloc[-1]
+        total_profit = profit -  comisions
+        
+    
+        print('\nNumbers of trade: {trades}.'.format(trades = len(df.index)),
+              'Total profit: {profit} $.'.format(profit = round(total_profit)),
+              'Options profit: {op} $.'.format(op=round(option_profit,2)),
+              'Stock profit : {sp} $.'.format(sp=round(stocks_profit,2)),
+              'Mean: {mean} $.'.format(mean = round(mean,2)),
+              'Standard deviation : {std} $.'.format(std = round(std,2)),
+              'Sharpe ratio: {sr} .'.format(sr = round(sharpe_ratio,2)),
+              'Comision rate : {c}.'.format(c = comisions),
+              sep='\n\n')
+      
+        plt.plot(df.index,df['cumsum_covered'] )
         plt.gcf().autofmt_xdate()
         plt.title('Accounting Curve')
         plt.ylabel('Profit')
         plt.xlabel('Date')
         plt.show()
 
-
-        std = df['covered_call_pnl'].std()
-        mean = df['covered_call_pnl'].mean()
-        sharpe_ratio = mean/std
-
-
-        win_loss = pd.DataFrame(np.where(df['covered_call_pnl']>=0,1,0))
-        win_ratio = (win_loss.sum()*100)/win_loss.count()
-        loss_ratio = 100-win_ratio
-        comisions = df['comision'].sum() * exchange_comisions
-        
-        total_profit = df['cumsum'].iloc[-1] 
-        prueba = total_profit -  comisions
-        print(prueba )
-        print("Win - Loss ratio is : %d %% WIN and  %d %% LOSS \nWith a SharpeRatio of : %f and a total Profit of %d $ comisions %f" 
-        %(win_ratio,loss_ratio,sharpe_ratio,total_profit,comisions))
-
-      
-
-
-        
+class PutProtective():
+    pass
 
 if __name__ == '__main__':
     main()
