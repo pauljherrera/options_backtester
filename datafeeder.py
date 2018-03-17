@@ -26,7 +26,7 @@ class DataFeeder():
 
 
     def feed_data(self,strategy = None,data = None,**kwargs):
-        if data is not None :      #test purpose, this allow to load test data in csv format
+        if data is not None :      #test purpose, this allow US to load test data in csv format
             
             dataFrame = data
             
@@ -36,7 +36,7 @@ class DataFeeder():
             csv_name = ticker+ '-'+str(start_date)+'-'+str(end_date)+'.csv'
             dataFrame.to_csv(csv_name,index = False)
             dataFrame = dataFrame.sort_values(by= ['trade_date']) #Sort dates in order to make backtest
-        strategy.load(dataFrame)
+        strategy.backtest(dataFrame)
 
     def checker(self):  #Probaly deprecated on V2
         """Function to check wether a list of dates is available on the historical data
