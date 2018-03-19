@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from config import config
 from tqdm import tqdm
 
+pd.options.mode.chained_assignment = None
+
 duration = config['duration']
 OTM_high = config['%OTM'] + 1
 OTM_low = config['%OTM'] - 1
@@ -47,7 +49,7 @@ class BaseStrategy():
                     acum=1
                     #Reset the dates
 
-        df = pd.DataFrame(row_list,columns = ['trade_date','expire_date','shares_pnl','options_pnl','strategy_pnl','strike'])
+        df = pd.DataFrame(row_list,columns = ['trade_date','expire_date','shares_pnl','options_pnl','strategy_pnl','strike','initial_stkPx','final_stkPx'])
     
         self.stats_and_plot(df)
     
@@ -74,7 +76,7 @@ class BaseStrategy():
         df['cumsum_stock']= df['shares_pnl'].cumsum()
 
         df = df.set_index('trade_date')
-        print(df[['expire_date','shares_pnl','options_pnl','strategy_pnl']])
+        print(df[['expire_date','shares_pnl','options_pnl','strategy_pnl','initial_stkPx','final_stkPx']])
 
         std = df['strategy_pnl'].std()
         mean = df['strategy_pnl'].mean()
@@ -153,7 +155,9 @@ class BaseStrategy():
             'strategy_pnl':strategy_pnl,
             'strike':strike,
             'trade_date':trade_date,
-            'expire_date':expire_date
+            'expire_date':expire_date,
+            'initial_stkPx':initial_stkPx,
+            'final_stkPx':final_stkPx
         } 
 
         return dict_round

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from config import config
-from datadownloader import DataDownloader
+from data.datadownloader import DataDownloader
 
 downloader = DataDownloader()
 

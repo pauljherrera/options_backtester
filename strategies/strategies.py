@@ -1,7 +1,7 @@
 import pandas as pd 
 import numpy as np 
 from config import config
-from baseStrategy import BaseStrategy
+from strategies.baseStrategy import BaseStrategy
 
 import matplotlib.pyplot as plt #Style config for plots
 import seaborn as sns
@@ -9,7 +9,7 @@ sns.set()
 sns.axes_style('darkgrid')
 
 
-pd.options.mode.chained_assignment = None
+
 
 
 positionPercent = config['%ofPosition']

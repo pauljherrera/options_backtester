@@ -6,7 +6,7 @@ import os
 import re
 
 from config import config
-from datadownloader import DataDownloader
+from data.datadownloader import DataDownloader
 
 donwloads = DataDownloader()
 
@@ -33,7 +33,7 @@ class DataFeeder():
         else:
             
             dataFrame = self.big_query_request(self.start_date,self.end_date,self.ticker) #BigQuery request with parameters
-            csv_name = ticker+ '-'+str(start_date)+'-'+str(end_date)+'.csv'
+            csv_name = "Historical Data/test_data/"+ticker+ '-'+str(start_date)+'-'+str(end_date)+'.csv'
             dataFrame.to_csv(csv_name,index = False)
             dataFrame = dataFrame.sort_values(by= ['trade_date']) #Sort dates in order to make backtest
         strategy.backtest(dataFrame)
