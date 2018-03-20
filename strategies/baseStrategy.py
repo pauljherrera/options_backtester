@@ -122,7 +122,8 @@ class BaseStrategy():
         plt.title('Accounting Curve')
         plt.ylabel('Profit')
         plt.xlabel('Date')
-        plt.show()
+        name = ticker_ + "-" + start_date + "-" + end_date + " Backtest.png"
+        plt.savefig('name')
 
     def pnl(self,initial_stkPx,final_stkPx,strike,shares,options,trade_date,expire_date,premiun,positive_rule,negative_rule):
         """Profit & Loss method, calculate the stats of the backtest. Rules must be strategy specific.
