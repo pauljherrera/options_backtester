@@ -1,12 +1,19 @@
 import pandas as pd 
 import numpy as np
-import matplotlib.pyplot as plt
+
+import matplotlib.pyplot as plt #Style config for plots
+import seaborn as sns
+sns.set()
+sns.axes_style('darkgrid')
+
 from config import config
 from tqdm import tqdm
 
 pd.options.mode.chained_assignment = None
 
-duration = config['duration']
+duration_days = config['duration']
+duration = duration_days/365
+OTM = config['%OTM']
 OTM_high = config['%OTM'] + 1
 OTM_low = config['%OTM'] - 1
 rule_number = config['buy/sell stock']
@@ -16,8 +23,8 @@ positionPercent = config['%ofPosition']
 start_date = config['start_date']
 end_date = config['end_date']
 ticker_ = config['ticker']
-premiun = config['premiun']
 frec = config['frecuency']
+fill_price = config['fillPrice']
 
 class BaseStrategy():
     
@@ -59,7 +66,8 @@ class BaseStrategy():
 
         data['condition'] = np.where((data['yte'].between(duration, duration+0.011)) & (data['%OTM'].between(OTM_low,OTM_high) ),True,False)
         true_values = data[data['condition']==True]
-        return true_values
+        best_choice = true_values.iloc[(true_values['%OTM']-OTM).abs().argsort()[:1]]
+        return best_choice
 
     def buy_share(self):
         n = 0
@@ -76,7 +84,7 @@ class BaseStrategy():
         df['cumsum_stock']= df['shares_pnl'].cumsum()
 
         df = df.set_index('trade_date')
-        print(df[['expire_date','shares_pnl','options_pnl','strategy_pnl','initial_stkPx','final_stkPx']])
+        print(df[['expire_date','shares_pnl','options_pnl','strategy_pnl']])
 
         std = df['strategy_pnl'].std()
         mean = df['strategy_pnl'].mean()
@@ -113,7 +121,7 @@ class BaseStrategy():
         plt.xlabel('Date')
         plt.show()
 
-    def pnl(self,initial_stkPx,final_stkPx,strike,shares,options,trade_date,expire_date,positive_rule,negative_rule):
+    def pnl(self,initial_stkPx,final_stkPx,strike,shares,options,trade_date,expire_date,premiun,positive_rule,negative_rule):
         """Profit & Loss method, calculate the stats of the backtest. Rules must be strategy specific.
         :param initial_stkPx: Initial price of stock on the trade date. 
         :type initial_stkPx: int.
@@ -176,7 +184,12 @@ class BaseStrategy():
         strike_price = selected_option['strike']
         expire_date = selected_option['expirDate']
         trade_date = selected_option['trade_date']
-                    
+        if fill_price == 'Bid':
+            option_premiun = selected_option['cBidPx']
+        elif fill_price == 'Ask':
+            option_premiun = selected_option['cBidPx']
+        #depends on the strategy bid or ask for premiun 
+                   
         share_trade =shares + next(generator)
         #Buy Shares
         option_trade = self.option_trade(positionPercent,share_trade)   
@@ -191,7 +204,7 @@ class BaseStrategy():
             final_price = df_final_price['stkPx'].iloc[0]   
             #Now that we the prices we take de 0 position (it doesn´t matter order)
 
-            row = self.pnl(stk_price1,final_price,strike_price,share_trade,option_trade,trade_date,expire_date,self.positive_rule,self.negative_rule) 
+            row = self.pnl(stk_price1,final_price,strike_price,share_trade,option_trade,trade_date,expire_date,option_premiun,self.positive_rule,self.negative_rule) 
             return row   
 
     def option_trade(self,postionPercent,shares_calc):

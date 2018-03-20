@@ -3,15 +3,6 @@ import numpy as np
 from config import config
 from strategies.baseStrategy import BaseStrategy
 
-import matplotlib.pyplot as plt #Style config for plots
-import seaborn as sns
-sns.set()
-sns.axes_style('darkgrid')
-
-
-
-
-
 positionPercent = config['%ofPosition']
 
 
@@ -27,11 +18,11 @@ class CoveredCall(BaseStrategy):
         setattr(self,'name',name)
 
     def positive_rule(self,strike_price,initial_price,final_price,premiun,options,shares):
-        result = (-(final_price - strike_price ) + premiun) * 100 * options
+        result = (-(final_price - strike_price )*shares) + (premiun *  options)
         return result
 
     def negative_rule(self,strike_price,initial_price,final_price,premiun,options,shares):
-        result = premiun *100 * options
+        result = premiun * options
         return result
 
 
@@ -48,13 +39,13 @@ class ProtectivePut(BaseStrategy):
     
     def positive_rule(self,strike_price,initial_price,final_price,premiun,options,shares):
         
-        result = - (premiun)*shares
+        result = - (premiun)*options
         return result 
 
 
     def negative_rule(self,strike_price,initial_price,final_price,premiun,options,shares):
         
-        loss = (premiun)*shares + (strike_price - final_price)*shares
+        loss = (premiun)*options + (strike_price - final_price)*shares
         return loss
 
 

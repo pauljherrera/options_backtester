@@ -19,7 +19,7 @@ class DataDownloader(object):
     """
     def __init__(self,*args,**kwargs):
         self.client = bigquery.Client.from_service_account_json(
-        'Harvested Backtest Framework-c01b8a37c1fb.json')
+        'Private Files/Harvested Backtest Framework-c01b8a37c1fb.json')
         self.SCHEMA = [
             bigquery.SchemaField('ticker', 'STRING', mode='NULLABLE'),
             bigquery.SchemaField('stkPx', 'FLOAT', mode='NULLABLE'),
