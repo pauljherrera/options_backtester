@@ -18,8 +18,7 @@ class DataDownloader(object):
     """ Class to handle downloads from quandl
     """
     def __init__(self,*args,**kwargs):
-        self.client = bigquery.Client.from_service_account_json(
-        'Private Files/Harvested Backtest Framework-c01b8a37c1fb.json')
+        self.client = bigquery.Client()
         self.SCHEMA = [
             bigquery.SchemaField('ticker', 'STRING', mode='NULLABLE'),
             bigquery.SchemaField('stkPx', 'FLOAT', mode='NULLABLE'),

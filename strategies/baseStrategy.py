@@ -1,7 +1,10 @@
 import pandas as pd 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt #Style config for plots
+
 import seaborn as sns
 sns.set()
 sns.axes_style('darkgrid')
