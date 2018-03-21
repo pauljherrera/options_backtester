@@ -212,5 +212,5 @@ class BaseStrategy():
             return row   
 
     def option_trade(self,postionPercent,shares_calc):
-            calls = (positionPercent*100)/shares_calc
+            calls = (shares)/positionPercent
             return calls
