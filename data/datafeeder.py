@@ -16,7 +16,9 @@ end_date = config['end_date']
 
 
 class DataFeeder():
-    
+    """
+    Class that manage all the data requirements. 
+    """    
 
     def __init__(self,*args,**kwargs):
         
@@ -26,6 +28,16 @@ class DataFeeder():
 
 
     def feed_data(self,strategy = None,data = None,**kwargs):
+        """
+        Method to parse data to the selected strategy.
+
+        :param strategy: Specific strategy for BackTest,
+        :type strategy: object.
+
+        :param data: CSV data. This is used for test purpose.
+        :type data: DataFrame
+
+        """
         if data is not None :      #test purpose, this allow US to load test data in csv format
             
             dataFrame = data
@@ -39,7 +51,8 @@ class DataFeeder():
         strategy.backtest(dataFrame)
 
     def checker(self):  #Probaly deprecated on V2
-        """Function to check wether a list of dates is available on the historical data
+        """
+        Function to check wether a list of dates is available on the historical data
         """
         dates = os.listdir('Historical Data')
         dirs = []
@@ -58,7 +71,8 @@ class DataFeeder():
         
 
     def range_dates(self): 
-        """Function to make a range between Start_date and end_date
+        """
+        Function to make a range between Start_date and end_date
         """
 
         my_dates = pd.bdate_range(start_date,end_date)
@@ -69,7 +83,8 @@ class DataFeeder():
 
 
     def big_query_request(self,start_date,end_date,ticker):
-        """Function that extract data from BigQuery
+        """
+        Function that extract data from BigQuery
 
         :param start_date: Initial date of backteste
         :type start_date: String

@@ -27,8 +27,23 @@ frec = config['frecuency']
 fill_price = config['fillPrice']
 
 class BaseStrategy():
-    
+    """
+    Base Strategy 
+    This class manage all the strategy's logic extracting the data and processing it.
+
+    This class doesn't stand by himself. Other strategies muts inherit it.
+
+    Positive_rule and negative_rule methods rule should be overridden.
+
+    """
     def backtest(self, data): 
+        """
+        Method that manage raw strategy logic.
+        
+        :param data: DataFrame contained data from StartDate to EndDate.
+        :type data: DataFrame.
+
+        """
         dates = data['trade_date'].drop_duplicates()  #Extract list of dates to iterate over
         open_trade = True
         row_list = [] #List of rows to add to DataFrame
@@ -61,7 +76,13 @@ class BaseStrategy():
         self.stats_and_plot(df)
     
     def entry(self,data):
-            
+        """
+        Method that evaluate if exist an option that match users preference.
+        :param data: csv with raw data.
+        :type data: dataFrame
+
+        return: dataFrame.
+        """    
         data['%OTM'] =  ((data['strike'] * 100)/data['stkPx'] ) - 100 #Convert price to %OTM
 
         data['condition'] = np.where((data['yte'].between(duration, duration+0.011)) & (data['%OTM'].between(OTM_low,OTM_high) ),True,False)
@@ -70,13 +91,23 @@ class BaseStrategy():
         return best_choice
 
     def buy_share(self):
+        """
+        Simple generator that buys or sells stocks.
+        """
         n = 0
         while True:
             yield rule_number*n
             n += 1
 
     def stats_and_plot(self,dataFrame):
-            
+        """
+        Method that calculate stats and plot graphics.
+
+        :param dataFrame: DataFrame with trades made.
+        :type dataFrame: DataFrame.
+
+
+        """
         df = dataFrame
         
         df['cumsum_strategy']= df['strategy_pnl'].cumsum()
@@ -177,7 +208,18 @@ class BaseStrategy():
         pass
 
     def extract_row(self,entry,generator,data):   
-        
+        """
+        Method that extract information from the selected options and returns the P&L.
+
+        :param entry: data Frame with closest match to user's preferences.
+        :type entry: DataFrame.
+
+        :param generator: Simple generator that buys or sells stocks on every trade.
+        :type generator: Generator.
+
+        :param data: raw data.
+        :type data: DataFrame 
+        """
         selected_option = entry.iloc[0] 
         #Select the first option, this can be improve to match exactly the parameters (Optimize)
         stk_price1 = selected_option['stkPx']

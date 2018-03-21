@@ -9,7 +9,9 @@ downloader = DataDownloader()
 
 
 def main():
-   
+   """
+   Function that download todays data from Quandl and upload it to GoogleBigQuery
+   """
    downloader.daily_update()
 
 if __name__ == '__main__':

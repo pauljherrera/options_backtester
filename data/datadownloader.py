@@ -133,7 +133,19 @@ class DataDownloader(object):
     
         
     def load_data_from_file(self,dataset_id,table_id, source_file_name):
+        """
+        Function for upload data to Google BiqQuery
         
+        :param dataset_id: Google's big query DataSet.
+        :type dataset_id: string.
+
+        :param table_id: Google's big Query table.
+        :param table_id: string.
+
+        :param source_file_name: CSV file name.
+        :param type: string.
+
+        """
         dataset_ref = self.client.dataset(dataset_id)
         table_ref = dataset_ref.table(table_id)
 
@@ -152,6 +164,14 @@ class DataDownloader(object):
             job.output_rows, dataset_id, table_id))
 
     def __create_dataset(self,data_set,data_set_description):
+        """
+        This method create a DataSet in Google's Big Query.
+        :param data_set: Name of the dataSet 
+        :type data_set: String
+
+        :param data_set_description: Short description about dataSet.
+        :type data_set_description: String.
+        """
         dataset_ref = self.client.dataset(data_set)
         dataset = Dataset(dataset_ref)
         dataset.description = data_set_description
@@ -168,7 +188,18 @@ class DataDownloader(object):
         table = self.client.create_table(table)      # API request
 
     def load_multiple_files(self,dataset,table,list_data=None):
+        """
+        Method that upload multiples files to Google Big Query.
+        :param dataset: Name of the dataSet.
+        :type dataset: String.
 
+        :param table: GBQ table.
+        :type table: String.
+
+        :param list_data: Name of the CSV files.
+        :type : list.
+        
+        """
         if list_data is not None:
             files = list_data
         else:

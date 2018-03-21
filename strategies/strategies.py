@@ -18,7 +18,7 @@ class CoveredCall(BaseStrategy):
         setattr(self,'name',name)
 
     def positive_rule(self,strike_price,initial_price,final_price,premiun,options,shares):
-        result = (-(final_price - strike_price )*shares) + (premiun *  options)
+        result = ((strike_price-final_price)*shares) + (premiun *  options)
         return result
 
     def negative_rule(self,strike_price,initial_price,final_price,premiun,options,shares):

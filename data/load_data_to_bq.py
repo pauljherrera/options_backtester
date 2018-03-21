@@ -13,7 +13,6 @@ downloads = DataDownloader()
 
 
 def main():
-    #downloads.create_table()
     downloads.load_multiple_files('Options_backtester','OSMV_TABLES')
 if __name__ == '__main__':
     main()
