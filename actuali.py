@@ -10,7 +10,7 @@ downloader = DataDownloader()
 
 def main():
    
-   downloader.load_multiple_files('options_backtester','OSMV_TABLES')
+   downloader.load_multiple_files('Options_backtester','OSMV_TABLES')
 
 if __name__ == '__main__':
     main()
