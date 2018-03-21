@@ -1,8 +1,8 @@
 import datetime as dt
 config = {
     # General config.
-    'start_date': '2013-01-01',
-    'end_date': '2018-02-31',
+    'start_date': '2018-03-16',
+    'end_date': '2018-03-19',
     'api_key' : "insertQuandlApiKey",
 
     # Strategy config.
