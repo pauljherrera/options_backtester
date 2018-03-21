@@ -1,9 +1,15 @@
 import datetime as dt
 config = {
     # General config.
+<<<<<<< HEAD
     'start_date': '2015-01-01',
     'end_date': '2018-03-15',
     'api_key' : "7MA978mgAH8cTzL7CGa_",
+=======
+    'start_date': '2018-03-16',
+    'end_date': '2018-03-19',
+    'api_key' : "insertQuandlApiKey",
+>>>>>>> eca72d90ff61c17324b98ab09ec48f476f38085d
 
     # Strategy config.
     'ticker': 'MRK',
