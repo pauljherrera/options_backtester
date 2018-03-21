@@ -77,7 +77,7 @@ class DataFeeder():
 
         my_dates = pd.bdate_range(start_date,end_date)
         duel = pd.DataFrame(my_dates)
-        duel[0] = duel[0].dt.strftime('%Y-%m-%d')
+        duel[0] = duel[0].dt.strftime('%Y%m%d')
         missing_dates = duel[0].tolist()
         return missing_dates
 
