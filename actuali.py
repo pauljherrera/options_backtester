@@ -10,7 +10,6 @@ def main():
     data.checker()
 
 
-
-if if __name__ == '__main__':
+if __name__ == '__main__':
     main()
     
