@@ -23,9 +23,9 @@ my_feeder = DataFeeder()
 
 def main():
    
-    df =pd.read_csv('Historical Data/test_data/MRK-2016-01-01-2018-02-01.csv')
-    df = df.sort_values(by= ['trade_date'])
-    my_feeder.feed_data(strategy = strategy, data= df)
+   # df =pd.read_csv('Historical Data/test_data/MRK-2016-01-01-2018-02-01.csv')
+   # df = df.sort_values(by= ['trade_date'])
+    my_feeder.feed_data(strategy = strategy)
 
 if __name__ == '__main__':
     main()

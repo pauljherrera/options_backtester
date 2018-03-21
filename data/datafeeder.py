@@ -33,8 +33,8 @@ class DataFeeder():
         else:
             
             dataFrame = self.big_query_request(self.start_date,self.end_date,self.ticker) #BigQuery request with parameters
-            csv_name = "Historical Data/test_data/"+ticker+ '-'+str(start_date)+'-'+str(end_date)+'.csv'
-            dataFrame.to_csv(csv_name,index = False)
+           #csv_name = "Historical Data/test_data/"+ticker+ '-'+str(start_date)+'-'+str(end_date)+'.csv'
+           #dataFrame.to_csv(csv_name,index = False)
             dataFrame = dataFrame.sort_values(by= ['trade_date']) #Sort dates in order to make backtest
         strategy.backtest(dataFrame)
 
