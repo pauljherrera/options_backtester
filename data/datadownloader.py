@@ -105,7 +105,7 @@ class DataDownloader(object):
                 
     def daily_update(self):
 
-        date = datetime.strftime(datetime.now()-timedelta(1), '%Y%m%d') 
+        date = datetime.strftime(datetime.now(), '%Y%m%d') 
         #Get yesterday date to download data. This method should run everyday.
 
         self.__download(date)
