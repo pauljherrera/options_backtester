@@ -81,50 +81,53 @@ class BaseStrategy():
     def stats_and_plot(self,dataFrame):
             
         df = dataFrame
+        if df.empty == False:
+            
+            df['cumsum_strategy']= df['strategy_pnl'].cumsum()
+            df['cumsum_option']= df['options_pnl'].cumsum()
+            df['cumsum_stock']= df['shares_pnl'].cumsum()
+
+            df = df.set_index('trade_date')
+            print(df[['expire_date','shares_pnl','options_pnl','strategy_pnl']])
+
+            std = df['strategy_pnl'].std()
+            mean = df['strategy_pnl'].mean()
+            sharpe_ratio = mean/std
+
+            win_loss = pd.DataFrame(np.where(df['strategy_pnl']>=0,1,0))
+            win_ratio = (win_loss.sum()*100)/win_loss.count()
+            loss_ratio = 100-win_ratio
+            comisions = len(df.index) * exchange_comisions
+            profit = df['cumsum_strategy'].iloc[-1] 
+            stocks_profit = df['cumsum_stock'].iloc[-1]
+            option_profit = df['cumsum_option'].iloc[-1]
+            total_profit = profit -  comisions
+            
         
-        df['cumsum_strategy']= df['strategy_pnl'].cumsum()
-        df['cumsum_option']= df['options_pnl'].cumsum()
-        df['cumsum_stock']= df['shares_pnl'].cumsum()
-
-        df = df.set_index('trade_date')
-        print(df[['expire_date','shares_pnl','options_pnl','strategy_pnl']])
-
-        std = df['strategy_pnl'].std()
-        mean = df['strategy_pnl'].mean()
-        sharpe_ratio = mean/std
-
-        win_loss = pd.DataFrame(np.where(df['strategy_pnl']>=0,1,0))
-        win_ratio = (win_loss.sum()*100)/win_loss.count()
-        loss_ratio = 100-win_ratio
-        comisions = len(df.index) * exchange_comisions
-        profit = df['cumsum_strategy'].iloc[-1] 
-        stocks_profit = df['cumsum_stock'].iloc[-1]
-        option_profit = df['cumsum_option'].iloc[-1]
-        total_profit = profit -  comisions
+            print('\nBacktest results of {tick} from {start} to {end}'.format(tick=ticker_,start=start_date,end=end_date),
+                'Strategy: {s}'.format(s = self.name),
+                'Numbers of trade: {trades}.'.format(trades = len(df.index)),
+                'Total profit: {profit} $.'.format(profit = round(total_profit)),
+                'Options profit: {op} $.'.format(op=round(option_profit,2)),
+                'Stock profit : {sp} $.'.format(sp=round(stocks_profit,2)),
+                'Percent of WIN : {w}% '.format(w = int(win_ratio)),
+                'Percent of LOSS : {l}% '.format(l = int(loss_ratio)),
+                'Mean: {mean} $.'.format(mean = round(mean,2)),
+                'Standard deviation : {std} $.'.format(std = round(std,2)),
+                'Sharpe ratio: {sr} .'.format(sr = round(sharpe_ratio,2)),
+                'Comision rate : {c}.'.format(c = comisions),
+                sep='\n\n')
         
-    
-        print('\nBacktest results of {tick} from {start} to {end}'.format(tick=ticker_,start=start_date,end=end_date),
-              'Strategy: {s}'.format(s = self.name),
-              'Numbers of trade: {trades}.'.format(trades = len(df.index)),
-              'Total profit: {profit} $.'.format(profit = round(total_profit)),
-              'Options profit: {op} $.'.format(op=round(option_profit,2)),
-              'Stock profit : {sp} $.'.format(sp=round(stocks_profit,2)),
-              'Percent of WIN : {w}% '.format(w = int(win_ratio)),
-              'Percent of LOSS : {l}% '.format(l = int(loss_ratio)),
-              'Mean: {mean} $.'.format(mean = round(mean,2)),
-              'Standard deviation : {std} $.'.format(std = round(std,2)),
-              'Sharpe ratio: {sr} .'.format(sr = round(sharpe_ratio,2)),
-              'Comision rate : {c}.'.format(c = comisions),
-              sep='\n\n')
-      
-        plt.plot(df.index,df['cumsum_strategy'] )
-        plt.gcf().autofmt_xdate()
-        plt.title('Accounting Curve')
-        plt.ylabel('Profit')
-        plt.xlabel('Date')
-        name = ticker_ + "-" + start_date + "-" + end_date + " Backtest"
-        plt.savefig(name)
-
+            plt.plot(df.index,df['cumsum_strategy'] )
+            plt.gcf().autofmt_xdate()
+            plt.title('Accounting Curve')
+            plt.ylabel('Profit')
+            plt.xlabel('Date')
+            name = ticker_ + "-" + start_date + "-" + end_date + " Backtest"
+            plt.savefig(name)
+        else:
+            
+            print("\n\nNo preference match, try another setting.")
     def pnl(self,initial_stkPx,final_stkPx,strike,shares,options,trade_date,expire_date,premiun,positive_rule,negative_rule):
         """Profit & Loss method, calculate the stats of the backtest. Rules must be strategy specific.
         :param initial_stkPx: Initial price of stock on the trade date. 
