@@ -7,7 +7,7 @@ config = {
 
     # Strategy config.
     'ticker': 'GOOGL',
-    'strategy':'Protective Put',
+    'strategy':'Protecti   ve Put',
     'fillPrice':'Bid', #Bid or Ask
     'premiun' : 0.5,
     '%OTM' : 2,

@@ -24,7 +24,7 @@ start_date = config['start_date']
 end_date = config['end_date']
 ticker_ = config['ticker']
 frec = config['frecuency']
-fill_price = config['fillPrice']
+fill_price = config['fillPrice'].lower().replace(" ", "")
 
 class BaseStrategy():
     """
@@ -228,9 +228,9 @@ class BaseStrategy():
         strike_price = selected_option['strike']
         expire_date = selected_option['expirDate']
         trade_date = selected_option['trade_date']
-        if fill_price == 'Bid':
+        if fill_price == 'bid':
             option_premiun = selected_option['cBidPx']
-        elif fill_price == 'Ask':
+        elif fill_price == 'ask':
             option_premiun = selected_option['cBidPx']
         #depends on the strategy bid or ask for premiun 
                    
