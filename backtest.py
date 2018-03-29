@@ -10,10 +10,10 @@ start_date = config['start_date']
 end_date = config['end_date']
 ticker = config['ticker']
 
-if strate == 'covered call' :
+if strate == 'coveredcall' :
     
     strategy = CoveredCall()
-elif strate == 'protective put':
+elif strate == 'protectiveput':
     
     strategy = ProtectivePut()
 

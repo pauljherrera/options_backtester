@@ -2,7 +2,7 @@ import datetime as dt
 config = {
     # General config.
     'api_key' : "7MA978mgAH8cTzL7CGa_",
-    'start_date': '2018-03-16',
+    'start_date': '2018-03-1',
     'end_date': '2018-03-19',
 
     # Strategy config.
