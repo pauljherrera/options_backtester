@@ -27,7 +27,7 @@ start_date = config['start_date']
 end_date = config['end_date']
 ticker_ = config['ticker']
 frec = config['frecuency']
-fill_price = config['fillPrice']
+fill_price = config['fillPrice'].lower()
 
 class BaseStrategy():
     
@@ -128,7 +128,7 @@ class BaseStrategy():
         else:
             
             print("\n\nNo preference match, try another setting. \n\n")
-            
+
     def pnl(self,initial_stkPx,final_stkPx,strike,shares,options,trade_date,expire_date,premiun,positive_rule,negative_rule):
         """Profit & Loss method, calculate the stats of the backtest. Rules must be strategy specific.
         :param initial_stkPx: Initial price of stock on the trade date. 
@@ -192,9 +192,9 @@ class BaseStrategy():
         strike_price = selected_option['strike']
         expire_date = selected_option['expirDate']
         trade_date = selected_option['trade_date']
-        if fill_price == 'Bid':
+        if fill_price == 'bid':
             option_premiun = selected_option['cBidPx']
-        elif fill_price == 'Ask':
+        elif fill_price == 'ask':
             option_premiun = selected_option['cBidPx']
         #depends on the strategy bid or ask for premiun 
                    
