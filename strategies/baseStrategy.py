@@ -127,7 +127,8 @@ class BaseStrategy():
             plt.savefig(name)
         else:
             
-            print("\n\nNo preference match, try another setting.")
+            print("\n\nNo preference match, try another setting. \n\n")
+            
     def pnl(self,initial_stkPx,final_stkPx,strike,shares,options,trade_date,expire_date,premiun,positive_rule,negative_rule):
         """Profit & Loss method, calculate the stats of the backtest. Rules must be strategy specific.
         :param initial_stkPx: Initial price of stock on the trade date. 
