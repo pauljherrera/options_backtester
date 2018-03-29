@@ -27,7 +27,7 @@ start_date = config['start_date']
 end_date = config['end_date']
 ticker_ = config['ticker']
 frec = config['frecuency']
-fill_price = config['fillPrice'].lower()
+fill_price = config['fillPrice'].lower().replace(" ", "")
 
 class BaseStrategy():
     

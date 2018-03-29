@@ -5,7 +5,7 @@ from config import config
 from data.datafeeder import DataFeeder
 from strategies.strategies import ProtectivePut,CoveredCall
 
-strate =  config['strategy'].lower()
+strate =  config['strategy'].lower().replace(" ", "")
 start_date = config['start_date']
 end_date = config['end_date']
 ticker = config['ticker']
