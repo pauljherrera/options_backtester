@@ -103,6 +103,6 @@ class DataFeeder():
                                 """ %(ticker,start_date,end_date)
 
         projectid = 'advance-mantis-188120'
-        data_frame = pd.read_gbq(query, projectid,private_key = 'Harvested Backtest Framework-c01b8a37c1fb.json')
+        data_frame = pd.read_gbq(query, projectid,private_key = 'Private Files/Harvested Backtest Framework-c01b8a37c1fb.json')
         
         return data_frame
