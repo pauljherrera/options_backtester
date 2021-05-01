@@ -81,7 +81,7 @@ pytz==2018.3
 Quandl==3.3.0
 requests==2.18.4
 requests-oauthlib==0.8.0
-rsa==3.4.2
+rsa==4.7
 scipy==1.0.0
 seaborn==0.8.1
 six==1.11.0
