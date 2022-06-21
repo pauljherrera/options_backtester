@@ -57,7 +57,7 @@ matplotlib==2.2.0
 mccabe==0.6.1
 more-itertools==4.1.0
 ndg-httpsclient==0.4.4
-numpy==1.14.0
+numpy==1.22.0
 oauth2client==3.0.0
 oauthlib==2.0.6
 pandas==0.22.0
